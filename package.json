@@ -1,0 +1,31 @@
+{
+  "name": "natron-logging",
+  "version": "0.1.0",
+  "description": "Natron Logging",
+  "keywords": [
+    "natron",
+    "logging"
+  ],
+  "homepage": "http://natronjs.com/",
+  "author": "Stefan Rumzucker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natronjs/natron-logging.git"
+  },
+  "scripts": {
+    "build": "npm --prefix build run build",
+    "build-install": "npm --prefix build install",
+    "test": "npm --prefix test test",
+    "test-install": "npm --prefix test install"
+  },
+  "dependencies": {
+    "chalk": "^1.1.0",
+    "dateformat": "^1.0.0",
+    "object-assign": "^4.0.0",
+    "winston": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.0"
+  },
+  "license": "MIT"
+}
