@@ -1,3 +1,5 @@
 {
-  "optional": []
+  "optional": [
+    "es7.classProperties"
+  ]
 }

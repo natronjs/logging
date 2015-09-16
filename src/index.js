@@ -1,6 +1,7 @@
 /*
  * natron-logging
  */
+import {Console as NativeConsole} from "console";
 import assign from "object-assign";
 import chalk from "chalk";
 import dateformat from "dateformat";
@@ -34,24 +35,41 @@ class Console extends winston.transports.Console {
     if (msg && meta && meta.label) {
       label += " [" + meta.label + "]";
     }
-    let out = console.log;
-    if (level === "error" || (level === "debug" && !this.debugStdout)) {
-      out = console.error;
+    let out = Console.out.std;
+    switch (level) {
+      case "warn":
+      case "error": {
+        out = Console.out.err;
+        break;
+      }
+      case "debug": {
+        if (!this.debugStdout) {
+          out = Console.out.err;
+        }
+        break;
+      }
     }
     if (level === "error" && meta && meta.stack) {
       if (meta.stack instanceof Array) {
         msg = meta.stack.join("\n");
       } else {
-        msg = meta.stack + "";
+        msg = String(meta.stack);
       }
     }
     out(timestamp, label, msg || meta);
     this.emit("logged");
     cb(null, true);
   }
+
+  static out = (({info: std, error: err}) => {
+    return {
+      std: std.bind(console),
+      err: err.bind(console),
+    };
+  })(NativeConsole.prototype);
 }
 
-let defaultLogger = new winston.Logger({
+let winstonLogger = new winston.Logger({
   transports: [
     new Console({
       level: "debug",
@@ -75,7 +93,49 @@ let defaultLogger = new winston.Logger({
   exitOnError: false,
 });
 
-let {debug, verbose, info, warn, error} = defaultLogger;
+class Logger {
 
-export var logger = assign({}, {debug, verbose, info, warn, error});
+  debug(...args: any): void {
+    winstonLogger.debug(...args);
+  }
+
+  verbose(...args: any): void {
+    winstonLogger.verbose(...args);
+  }
+
+  info(...args: any): void {
+    winstonLogger.info(...args);
+  }
+
+  warn(...args: any): void {
+    winstonLogger.warn(...args);
+  }
+
+  error(...args: any): void {
+    winstonLogger.error(...args);
+  }
+}
+
+export function wrapConsole(logger: Logger): Function {
+  let {log, info, warn, error} = console;
+  assign(console, {
+    "log": (...args: any) => {
+      logger.info(...args);
+    },
+    "info": (...args: any) => {
+      logger.info(...args);
+    },
+    "warn": (...args: any) => {
+      logger.warn(...args);
+    },
+    "error": (...args: any) => {
+      logger.error(...args);
+    },
+  });
+  return () => {
+    assign(console, {log, info, warn, error});
+  };
+}
+
+export var logger = new Logger();
 export var colors = chalk;
