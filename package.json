@@ -14,9 +14,7 @@
   },
   "scripts": {
     "build": "npm --prefix build run build",
-    "build-install": "npm --prefix build install",
-    "test": "npm --prefix test run test",
-    "test-install": "npm --prefix test install"
+    "build-install": "npm --prefix build install"
   },
   "dependencies": {
     "chalk": "^1.1.0",

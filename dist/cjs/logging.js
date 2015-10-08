@@ -25,10 +25,6 @@ var _objectAssign = require("object-assign");
 
 var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
-var _chalk = require("chalk");
-
-var _chalk2 = _interopRequireDefault(_chalk);
-
 var _dateformat = require("dateformat");
 
 var _dateformat2 = _interopRequireDefault(_dateformat);
@@ -54,25 +50,9 @@ var Logger = (function (_winston$Logger) {
   function Logger(options) {
     _classCallCheck(this, Logger);
 
-    _get(Object.getPrototypeOf(Logger.prototype), "constructor", this).call(this, (0, _objectAssign2["default"])({}, options, {
-      levels: {
-        "debug": 0,
-        "verbose": 1,
-        "info": 2,
-        "success": 3,
-        "warn": 4,
-        "error": 5
-      },
-      colors: {
-        "debug": "blue",
-        "verbose": "cyan",
-        "info": "white",
-        "success": "green",
-        "warn": "yellow",
-        "error": "red"
-      },
+    _get(Object.getPrototypeOf(Logger.prototype), "constructor", this).call(this, (0, _objectAssign2["default"])({
       exitOnError: false
-    }));
+    }, options));
   }
 
   return Logger;
@@ -101,10 +81,19 @@ var ConsoleTransport = (function (_winston$transports$Console) {
         return (0, _dateformat2["default"])("dd mmm HH:MM:ss");
       };
     }
+    this.colors = options && options.colors;
     this.handleExceptions = true;
   }
 
   _createClass(ConsoleTransport, [{
+    key: "doColorize",
+    value: function doColorize(color, s) {
+      if (this.colors && this.colors[color] instanceof Function) {
+        return this.colors[color](s);
+      }
+      return s;
+    }
+  }, {
     key: "log",
     value: function log(level, msg, meta, cb) {
       if (this.silent) {
@@ -115,11 +104,10 @@ var ConsoleTransport = (function (_winston$transports$Console) {
       if (this.timestamp instanceof Function) {
         var timestamp = this.timestamp();
         if (timestamp) {
-          parts.push(_chalk2["default"].gray(timestamp));
+          parts.push(this.doColorize("gray", timestamp));
         }
       }
-      var levelLabel = LOG_LEVEL_SYMBOLS[level] || level;
-      parts.push(_winston2["default"].config.colorize(level, levelLabel));
+      parts.push(this.doColorize(level, LOG_LEVEL_SYMBOLS[level]));
       if (this.label) {
         parts.push("[" + this.label + "]");
       }

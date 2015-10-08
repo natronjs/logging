@@ -8,7 +8,7 @@
     "natron-vinyl": "^0.1.0",
     "vinyl-tf-babel": "^0.1.0"
   },
-  "optionalDevDependencies": {
+  "peerDevDependencies": {
     "babel-core": "^5.8.0"
   }
 }

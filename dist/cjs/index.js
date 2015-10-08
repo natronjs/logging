@@ -1,31 +1,33 @@
 /*
  * natron-logging
  */
-
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function _interopRequire(obj) { return obj && obj.__esModule ? obj["default"] : obj; }
-
-var _chalk = require("chalk");
-
-exports.colors = _interopRequire(_chalk);
-
-var _logger = require("./logger");
+var _logging = require("./logging");
 
 Object.defineProperty(exports, "Logger", {
   enumerable: true,
   get: function get() {
-    return _logger.Logger;
+    return _logging.Logger;
   }
 });
 Object.defineProperty(exports, "ConsoleTransport", {
   enumerable: true,
   get: function get() {
-    return _logger.ConsoleTransport;
+    return _logging.ConsoleTransport;
+  }
+});
+
+var _colors = require("./colors");
+
+Object.defineProperty(exports, "Colors", {
+  enumerable: true,
+  get: function get() {
+    return _colors.Colors;
   }
 });
 

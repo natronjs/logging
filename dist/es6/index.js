@@ -1,10 +1,8 @@
 /*
  * natron-logging
  */
-
 "use strict";
 
-export { default as colors } from "chalk";
-
-export { Logger, ConsoleTransport } from "./logger";
+export { Logger, ConsoleTransport } from "./logging";
+export { Colors } from "./colors";
 export { wrapConsole } from "./util";

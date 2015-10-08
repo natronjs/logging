@@ -3,7 +3,6 @@
  */
 import {default as console, Console} from "console";
 import assign from "object-assign";
-import chalk from "chalk";
 import dateformat from "dateformat";
 import winston from "winston";
 
@@ -19,25 +18,9 @@ export const LOG_LEVEL_SYMBOLS = {
 export class Logger extends winston.Logger {
 
   constructor(options?: object) {
-    super(assign({}, options, {
-      levels: {
-        "debug":   0,
-        "verbose": 1,
-        "info":    2,
-        "success": 3,
-        "warn":    4,
-        "error":   5,
-      },
-      colors: {
-        "debug":   "blue",
-        "verbose": "cyan",
-        "info":    "white",
-        "success": "green",
-        "warn":    "yellow",
-        "error":   "red",
-      },
+    super(assign({
       exitOnError: false,
-    }));
+    }, options));
   }
 }
 
@@ -51,7 +34,15 @@ export class ConsoleTransport extends winston.transports.Console {
     } else if (this.timestamp === null) {
       this.timestamp = () => dateformat("dd mmm HH:MM:ss");
     }
+    this.colors = options && options.colors;
     this.handleExceptions = true;
+  }
+
+  doColorize(color: Function|string, s: string): string {
+    if (this.colors && this.colors[color] instanceof Function) {
+      return this.colors[color](s);
+    }
+    return s;
   }
 
   log(level: string, msg: string, meta: object, cb: callable): void {
@@ -63,11 +54,10 @@ export class ConsoleTransport extends winston.transports.Console {
     if (this.timestamp instanceof Function) {
       let timestamp = this.timestamp();
       if (timestamp) {
-        parts.push(chalk.gray(timestamp));
+        parts.push(this.doColorize("gray", timestamp));
       }
     }
-    let levelLabel = LOG_LEVEL_SYMBOLS[level] || level;
-    parts.push(winston.config.colorize(level, levelLabel));
+    parts.push(this.doColorize(level, LOG_LEVEL_SYMBOLS[level]));
     if (this.label) {
       parts.push(`[${this.label}]`);
     }
